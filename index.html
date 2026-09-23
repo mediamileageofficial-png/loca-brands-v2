@@ -7,7 +7,7 @@
 <meta name="description" content="Loca Brands is a senior-led brand building studio. We build the Founder, the Brand, the Demand Engine.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Fredoka:wght@600;700&family=Poppins:wght@400;500;600;700;800&family=Lora:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Playfair+Display:ital,wght@1,700;1,800&family=Fredoka:wght@600;700&family=Poppins:wght@400;500;600;700;800&family=Lora:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
 <script type="importmap">
 { "imports": { "lenis": "https://unpkg.com/lenis@1.3.19/dist/lenis.mjs" } }
 </script>
@@ -86,13 +86,14 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 1.75rem 1.5rem;
+    height: 99px;
+    padding: 0 1.5rem;
     opacity: 0;
     transform: translateY(-0.75rem);
     transition: opacity 700ms var(--ease-entrance), transform 700ms var(--ease-entrance);
   }
-  @media (min-width: 640px) { .nav { padding: 2.5rem 3.5rem; } }
-  @media (min-width: 1280px) { .nav { padding: 2.75rem 4.5rem; } }
+  @media (min-width: 640px) { .nav { padding: 0 3.5rem; } }
+  @media (min-width: 1280px) { .nav { padding: 0 4.5rem; } }
   .nav.is-visible { opacity: 1; transform: translateY(0); }
 
   .topbar {
@@ -282,9 +283,7 @@
   @media (min-width: 640px) { .panel-index { right: 2.25rem; bottom: 1.75rem; font-size: 0.85rem; } }
 
   /* ---------- Hero ---------- */
-  /* flex-start (not center) so tall heading content can never overflow upward under the fixed nav */
-  .hero-panel { justify-content: flex-start; padding: clamp(9rem, 24vh, 12rem) 1.25rem 4rem; }
-  @media (min-width: 640px) { .hero-panel { padding: clamp(9.5rem, 22vh, 12.5rem) 2.5rem 4.5rem; } }
+  .hero-panel { justify-content: center; padding: 0; }
 
   .hero-blob {
     position: absolute;
@@ -321,139 +320,275 @@
   .eyebrow.is-visible { opacity: 1; transform: translateY(0); }
   .eyebrow::before { content: ""; width: 0.4rem; height: 0.4rem; border-radius: 50%; background: var(--red); }
 
-  .hero-grid {
+  /* Hero stage: a 100u-wide canvas centred in the screen. --u is 1% of the stage width,
+     capped by its height against a 16:10 design, so the composition scales as one piece. */
+  .hero-panel {
+    --pink: #df5571;
+    --hero-text: #1c1c1c;
+    --hero-muted: #5f5f5f;
+  }
+  .hero-stage {
     position: relative;
     z-index: 2;
     width: 100%;
-    max-width: 76rem;
-    margin: 0 auto;
+    height: 100%;
+    container-type: size;
+    --u: min(1cqw, 1.6cqh);
     text-align: left;
+    color: var(--hero-text);
+    background: #f6f6f6;
+    opacity: 0;
+    transition: opacity 900ms var(--ease-entrance);
   }
+  .hero-stage.is-visible { opacity: 1; }
 
-  .hero-copy { max-width: 34rem; }
-
-  .hero-heading {
-    font-family: "Poppins", sans-serif;
-    font-weight: 500;
-    font-size: clamp(2.5rem, 4.6vw, 3.85rem);
-    line-height: 1.12;
-    letter-spacing: -0.02em;
-    color: var(--ink);
+  /* Yellow right half: starts at canvas x=63u and runs to the screen's right edge. */
+  .hero-split {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: calc(50cqw - 13 * var(--u));
+    background: var(--yellow);
   }
-  .hero-heading strong { display: block; font-weight: 800; margin-top: 0.2em; }
-
-  .hero-desc {
-    margin-top: 2.25rem;
-    display: flex;
-    flex-direction: column;
-    gap: 1.25rem;
-  }
-  .hero-desc p {
-    font-family: "Lora", serif;
-    font-size: 1.02rem;
-    line-height: 1.75;
-    color: var(--ink-soft);
-    max-width: 32rem;
-  }
-  @media (min-width: 640px) { .hero-desc p { font-size: 1.1rem; } }
-  .hero-desc p strong { font-weight: 600; color: var(--ink); font-style: normal; }
-
-  .btn-outline {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    height: 3.5rem;
-    padding: 0 2.25rem;
-    border: 1.6px solid var(--ink);
-    border-radius: 9999px;
-    font-size: 0.85rem;
-    font-weight: 700;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-    color: var(--ink);
-    background: transparent;
-    margin-top: 2.75rem;
-    transition: background 220ms var(--ease-entrance), color 220ms var(--ease-entrance), transform 220ms var(--ease-entrance);
-  }
-  .btn-outline:hover { background: var(--ink); color: var(--yellow); transform: translateY(-2px); }
-  .btn-outline:focus-visible { outline: none; box-shadow: 0 0 0 3px rgba(88,5,11,0.25); }
-
-  /* Positioned against the hero panel's own fixed 100vh box (not the text column),
-     so sticker placement never depends on how tall the heading/copy happens to be. */
-  .hero-stickers {
+  .hero-canvas {
     position: absolute;
     inset: 0;
-    z-index: 1;
-    pointer-events: none;
+    width: calc(100 * var(--u));
+    margin: 0 auto;
   }
-  .sticker {
+
+  /* ---- Left slide strip ---- */
+  .hero-strip {
     position: absolute;
-    filter: drop-shadow(0 14px 22px rgba(88,5,11,0.2));
+    left: 0;
+    top: calc(18 * var(--u));
+    bottom: 0;
+    width: calc(7.4 * var(--u));
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    padding: calc(3 * var(--u)) 0 calc(4 * var(--u));
+    background: var(--yellow);
+    color: #ffffff;
   }
-  .sticker--planet {
-    width: clamp(160px, 12vw, 220px);
-    top: 9.5rem;
-    right: clamp(3%, 8vw, 9rem);
-    transform: rotate(-9deg);
-    animation: sticker-float-a 6.5s ease-in-out infinite;
-  }
-  .sticker--vinyl {
-    width: clamp(160px, 13vw, 230px);
-    bottom: 3rem;
-    right: clamp(2%, 4vw, 5rem);
-    transform: rotate(7deg);
-    animation: sticker-float-b 7.5s ease-in-out infinite;
-  }
-  .sticker svg { display: block; width: 100%; height: auto; }
+  .hero-strip button { display: grid; place-items: center; width: calc(3 * var(--u)); height: calc(5 * var(--u)); color: #ffffff; transition: transform 200ms var(--ease-entrance); }
+  .hero-strip button:hover { transform: scale(1.12); }
+  .hero-strip svg { width: 100%; height: 100%; }
+  .hero-strip-count { font-size: calc(1.5 * var(--u)); font-weight: 700; }
 
-  .sticker-arc-text {
-    font-family: "Fredoka", sans-serif;
-    font-weight: 700;
-    fill: var(--yellow);
-    stroke: var(--ink);
-    stroke-width: 2.5px;
-    paint-order: stroke fill;
+  /* ---- Copy ---- */
+  .hero-copy {
+    position: absolute;
+    left: calc(10.5 * var(--u));
+    top: calc(19.5 * var(--u));
+    width: calc(36 * var(--u));
+    z-index: 3;
   }
-  .sticker-main-text {
-    font-family: "Fredoka", sans-serif;
+  .hero-slide { transition: opacity 300ms var(--ease-entrance), transform 300ms var(--ease-entrance); }
+  .hero-slide.is-changing { opacity: 0; transform: translateY(8px); }
+  .hero-heading {
+    font-family: "Playfair Display", serif;
+    font-style: italic;
     font-weight: 700;
-    fill: var(--red);
-    stroke: var(--ink);
-    stroke-width: 3px;
-    paint-order: stroke fill;
+    font-size: calc(4.9 * var(--u));
+    line-height: 1.1;
+    letter-spacing: -0.01em;
   }
-  .vinyl-ring-text {
-    font-family: "Fredoka", sans-serif;
+  .hero-desc {
+    margin-top: calc(2 * var(--u));
+    max-width: calc(25 * var(--u));
+    font-size: calc(1.05 * var(--u));
+    line-height: 2;
+    color: var(--hero-muted);
+  }
+  .hero-more {
+    display: inline-block;
+    margin-top: calc(1.8 * var(--u));
+    padding-bottom: 2px;
+    border-bottom: 1.5px solid currentColor;
+    font-family: "Playfair Display", serif;
+    font-style: italic;
+    font-weight: 700;
+    font-size: calc(1.05 * var(--u));
+    transition: color 150ms var(--ease-entrance);
+  }
+  .hero-more:hover { color: var(--pink); }
+  .hero-price {
+    display: flex;
+    align-items: center;
+    gap: calc(2 * var(--u));
+    margin-top: calc(4.6 * var(--u));
+  }
+  .hero-price strong {
+    font-family: "Playfair Display", serif;
+    font-style: italic;
+    font-weight: 800;
+    font-size: calc(4.2 * var(--u));
+    line-height: 1;
+  }
+  .hero-plus {
+    display: grid;
+    place-items: center;
+    width: calc(3.8 * var(--u));
+    height: calc(3.8 * var(--u));
+    border-radius: 50%;
+    background: var(--yellow);
+    color: #ffffff;
+    box-shadow: 0 calc(0.6 * var(--u)) calc(1.4 * var(--u)) rgba(252,203,0,0.45);
+    transition: transform 200ms var(--ease-entrance), background 200ms var(--ease-entrance);
+  }
+  .hero-plus:hover { transform: rotate(90deg); background: var(--pink); }
+  .hero-plus svg { width: 50%; height: 50%; }
+
+  /* ---- "True Loca Brands" cup, sat on the split line ---- */
+  .hero-cup {
+    position: absolute;
+    left: calc(46.5 * var(--u));
+    top: calc(11.5 * var(--u));
+    width: calc(34 * var(--u));
+    height: calc(34 * var(--u));
+    z-index: 2;
+  }
+  .hero-cup > svg { display: block; width: 100%; height: 100%; overflow: visible; filter: drop-shadow(0 calc(1.8 * var(--u)) calc(2.2 * var(--u)) rgba(120,80,0,0.35)); }
+  .hero-cup-ring { transform-origin: 100px 100px; animation: cup-spin 28s linear infinite; }
+  @keyframes cup-spin { to { transform: rotate(360deg); } }
+  .cup-true { font-family: "Playfair Display", serif; font-style: italic; font-weight: 700; font-size: 15px; fill: var(--yellow); }
+  .cup-loca { font-family: "Fredoka", sans-serif; font-weight: 700; font-size: 27px; fill: #ffffff; letter-spacing: 0.02em; }
+  .cup-brands { font-family: "Poppins", sans-serif; font-weight: 700; font-size: 9.5px; letter-spacing: 0.38em; fill: var(--pink); }
+  .cup-ring-text { font-family: "Poppins", sans-serif; font-weight: 600; font-size: 5.6px; letter-spacing: 0.3em; fill: rgba(88,5,11,0.55); }
+
+  /* Small business icons scattered around the cup (in place of the reference's beans) */
+  .hero-icon {
+    position: absolute;
+    display: grid;
+    place-items: center;
+    width: calc(3.3 * var(--u));
+    height: calc(3.3 * var(--u));
+    border-radius: 50%;
+    background: #ffffff;
+    color: var(--pink);
+    box-shadow: 0 calc(0.4 * var(--u)) calc(0.9 * var(--u)) rgba(120,80,0,0.22);
+    transform: rotate(var(--r));
+    animation: icon-bob 4.5s ease-in-out var(--d) infinite;
+  }
+  .hero-icon svg { width: 52%; height: 52%; }
+  @keyframes icon-bob {
+    0%, 100% { transform: rotate(var(--r)) translateY(0); }
+    50%      { transform: rotate(var(--r)) translateY(calc(-0.6 * var(--u))); }
+  }
+  @media (prefers-reduced-motion: reduce) { .hero-icon { animation: none; } }
+
+  /* ---- Right rail ---- */
+  .hero-dots {
+    position: absolute;
+    right: calc(5.4 * var(--u));
+    top: calc(22 * var(--u));
+    display: flex;
+    flex-direction: column;
+    gap: calc(1.4 * var(--u));
+    list-style: none;
+  }
+  .hero-dots button {
+    display: block;
+    width: calc(1.05 * var(--u));
+    height: calc(1.05 * var(--u));
+    border-radius: 50%;
+    background: rgba(255,255,255,0.6);
+    transition: transform 200ms var(--ease-entrance), background 200ms var(--ease-entrance);
+  }
+  .hero-dots button[aria-current="true"] { background: #ffffff; transform: scale(1.35); }
+  .hero-cta {
+    position: absolute;
+    right: calc(4 * var(--u));
+    bottom: calc(5 * var(--u));
+    display: grid;
+    place-items: center;
+    width: calc(5.8 * var(--u));
+    height: calc(5.8 * var(--u));
+    border-radius: 50%;
+    background: #ffffff;
+    color: var(--yellow);
+    box-shadow: 0 calc(0.8 * var(--u)) calc(2 * var(--u)) rgba(120,80,0,0.25);
+    transition: transform 200ms var(--ease-entrance);
+  }
+  .hero-cta:hover { transform: scale(1.08); }
+  .hero-cta svg { width: 44%; height: 44%; margin-left: 8%; }
+  /* Soft pulse so it reads as a play button */
+  .hero-cta::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    border: 2px solid #ffffff;
+    animation: play-pulse 2.2s ease-out infinite;
+  }
+  @keyframes play-pulse {
+    0%   { transform: scale(1);   opacity: 0.8; }
+    100% { transform: scale(1.6); opacity: 0; }
+  }
+  @media (prefers-reduced-motion: reduce) { .hero-cta::before { animation: none; opacity: 0; } }
+  .hero-cta-badge {
+    position: absolute;
+    top: calc(-0.5 * var(--u));
+    right: calc(-0.5 * var(--u));
+    display: grid;
+    place-items: center;
+    width: calc(2.2 * var(--u));
+    height: calc(2.2 * var(--u));
+    border-radius: 50%;
+    border: 2px solid #ffffff;
+    background: var(--pink);
+    color: #ffffff;
+    font-size: calc(0.8 * var(--u));
+    font-weight: 700;
+  }
+
+  .hero-stage a:focus-visible, .hero-stage button:focus-visible { outline: 2px solid var(--pink); outline-offset: 3px; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero-cup-ring { animation: none; }
+  }
+
+  /* The hero carries its own top bar, so the global nav only appears once the page scrolls. */
+  .nav:not(.nav--scrolled) { opacity: 0; visibility: hidden; pointer-events: none; }
+
+  /* Nav call-to-action pill */
+  .nav-cta {
+    display: inline-flex;
+    align-items: center;
+    height: 2.5rem;
+    padding: 0 1.4rem;
+    border: 1.5px solid #df5571;
+    border-radius: 9999px;
+    color: #df5571;
+    font-size: 0.85rem;
     font-weight: 600;
-    font-size: 12.5px;
-    letter-spacing: 0.06em;
-    fill: #ffffff;
+    white-space: nowrap;
+    transition: background 200ms var(--ease-entrance), color 200ms var(--ease-entrance);
   }
-  .vinyl-arc-text {
-    font-family: "Poppins", sans-serif;
-    font-weight: 700;
-    font-size: 6.5px;
-    letter-spacing: 0.12em;
-    fill: #ffffff;
-  }
+  .nav-cta:hover { background: #df5571; color: #ffffff; }
 
-  @keyframes sticker-float-a {
-    0%, 100% { transform: rotate(-9deg) translateY(0); }
-    50%      { transform: rotate(-7deg) translateY(-10px); }
-  }
-  @keyframes sticker-float-b {
-    0%, 100% { transform: rotate(7deg) translateY(0); }
-    50%      { transform: rotate(9deg) translateY(8px); }
-  }
-
-  /* Below this width, hero-copy runs full width, so the stickers would sit on top of
-     the text rather than beside it — hide them rather than fight for the same space. */
-  @media (max-width: 900px) {
-    .hero-stickers { display: none; }
-  }
-  @media (max-width: 480px) {
-    .hero-heading { font-size: clamp(2rem, 9vw, 2.6rem); }
-    .btn-outline { width: 100%; }
+  /* Phones: stack in normal flow — copy on the light top, cup on the yellow bottom. */
+  @media (max-width: 700px) {
+    .hero-panel { padding: 0; }
+    .hero-stage { display: flex; flex-direction: column; padding: 1.4rem 1.25rem 1.5rem; overflow: hidden; }
+    .hero-canvas { display: contents; }
+    .hero-split { top: auto; width: 100%; height: 44%; }
+    .hero-strip, .hero-dots, .hero-icon { display: none; }
+    .hero-copy { position: relative; left: auto; top: auto; width: auto; margin-top: 1rem; }
+    .hero-heading { font-size: 2.4rem; }
+    .hero-desc { max-width: none; margin-top: 0.8rem; font-size: 0.85rem; line-height: 1.7; }
+    .hero-more { margin-top: 0.8rem; font-size: 0.9rem; }
+    .hero-price { margin-top: 1.2rem; gap: 1rem; }
+    .hero-price strong { font-size: 2.2rem; }
+    .hero-plus { width: 2.4rem; height: 2.4rem; }
+    .hero-cup { position: relative; left: auto; top: auto; width: 18rem; height: 18rem; margin: auto; flex-shrink: 0; }
+    .hero-cta { right: 1.25rem; bottom: 1.25rem; width: 3.2rem; height: 3.2rem; }
+    .hero-cta-badge { width: 1.3rem; height: 1.3rem; font-size: 0.6rem; }
+    .hero-panel .panel-index { display: none; }
+    .nav-cta { height: 2.1rem; padding: 0 0.9rem; font-size: 0.72rem; }
   }
 
   /* ---------- Services showcase (draggable carousel) ---------- */
@@ -1072,56 +1207,94 @@
     <a href="#services">Services</a>
     <a href="#difference">Our Difference</a>
   </nav>
+
+  <a class="nav-cta" href="start-a-project.html">Start a Project</a>
 </header>
 
 <main class="stack">
 
   <!-- ================= HERO ================= -->
   <div class="panel-wrap">
-    <section class="panel hero-panel" id="hero" style="--panel-bg: var(--yellow);">
-      <div class="hero-grid">
-        <div class="hero-copy">
-          <h1 class="hero-heading reveal-fade">We Build The Founder,<strong>The Brand &amp; The Demand Engine.</strong></h1>
+    <section class="panel hero-panel" id="hero" style="--panel-bg: #f6f6f6;">
+      <div class="hero-stage" id="hero-stage">
+        <div class="hero-split" aria-hidden="true"></div>
 
-          <div class="hero-desc">
-            <p class="reveal-fade" data-index="0">We are a senior-led brand building studio that helps founders <strong>build, launch, evolve, and scale</strong> consumer brands as one integrated system.</p>
-            <p class="reveal-fade" data-index="1">From idea to product, brand, design, technology, go-to-market, and growth — we bring the D2C ecosystem together.</p>
+        <div class="hero-canvas">
+          <div class="hero-strip">
+            <button type="button" data-hero-step="-1" aria-label="Previous slide">
+              <svg viewBox="0 0 24 40" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 38V3M5 10l7-7 7 7"/></svg>
+            </button>
+            <span class="hero-strip-count" id="hero-count" aria-live="polite">1</span>
+            <button type="button" data-hero-step="1" aria-label="Next slide">
+              <svg viewBox="0 0 24 40" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2v35M5 30l7 7 7-7"/></svg>
+            </button>
           </div>
 
-          <a class="btn-outline reveal-fade" data-index="2" href="start-a-project.html">Start a Project</a>
+          <div class="hero-copy">
+            <div class="hero-slide" id="hero-slide">
+              <h1 class="hero-heading" id="hero-title">Brand Building</h1>
+              <p class="hero-desc" id="hero-text">A senior-led studio that helps founders build, launch, evolve and scale consumer brands as one integrated system.</p>
+              <a class="hero-more" id="hero-more" href="#what-we-do">Read more</a>
+            </div>
+            <div class="hero-price">
+              <strong>D2C</strong>
+              <a class="hero-plus" href="start-a-project.html" aria-label="Start a project">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+              </a>
+            </div>
+          </div>
+
+          <span class="hero-icon" style="left:calc(46.8 * var(--u)); top:calc(12.2 * var(--u)); --r:-12deg; --d:0.00s" title="Idea" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 22h4"/><path d="M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.3 1 2.3h6c0-1 .4-1.8 1-2.3A7 7 0 0 0 12 2z"/></svg></span>
+          <span class="hero-icon" style="left:calc(40.2 * var(--u)); top:calc(12.8 * var(--u)); --r:10deg; --d:0.45s" title="Growth" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 7-8.5 8.5-5-5L2 17"/><path d="M16 7h6v6"/></svg></span>
+          <span class="hero-icon" style="left:calc(80.2 * var(--u)); top:calc(33.5 * var(--u)); --r:12deg; --d:0.90s" title="Target" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></span>
+          <span class="hero-icon" style="left:calc(79 * var(--u)); top:calc(41.5 * var(--u)); --r:-10deg; --d:1.35s" title="Launch" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16.5c-1.5 1.3-2 5-2 5s3.7-.5 5-2c.7-.8.7-2.1-.1-2.9a2.2 2.2 0 0 0-2.9-.1z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.9A12.9 12.9 0 0 1 22 2c0 2.7-.8 7.5-6 11a22.4 22.4 0 0 1-4 2z"/><path d="M9 12H4s.6-3 2-4c1.6-1.1 5 0 5 0M12 15v5s3-.6 4-2c1.1-1.6 0-5 0-5"/></svg></span>
+          <span class="hero-icon" style="left:calc(67.5 * var(--u)); top:calc(48.8 * var(--u)); --r:8deg; --d:1.80s" title="Marketing" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 11 18-5v12L3 14v-3z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/></svg></span>
+          <span class="hero-icon" style="left:calc(74.5 * var(--u)); top:calc(48 * var(--u)); --r:-14deg; --d:2.25s" title="Analytics" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M8 17v-6M13 17V7M18 17v-4"/></svg></span>
+          <span class="hero-icon" style="left:calc(58.5 * var(--u)); top:calc(52 * var(--u)); --r:10deg; --d:2.70s" title="Revenue" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12M6 8h12M6 13l8.5 8M6 13h3M9 13c6.7 0 6.7-10 0-10"/></svg></span>
+
+          <div class="hero-cup" role="img" aria-label="True Loca Brands">
+            <svg viewBox="0 0 200 200">
+              <defs>
+                <radialGradient id="saucerFill" cx="45%" cy="40%" r="65%">
+                  <stop offset="0" stop-color="#ffdc45"/>
+                  <stop offset="0.7" stop-color="#fccb00"/>
+                  <stop offset="1" stop-color="#eeb900"/>
+                </radialGradient>
+                <radialGradient id="cupDrink" cx="42%" cy="38%" r="70%">
+                  <stop offset="0" stop-color="#5a1119"/>
+                  <stop offset="0.6" stop-color="#33060b"/>
+                  <stop offset="1" stop-color="#1c0306"/>
+                </radialGradient>
+                <path id="cupRing" d="M100,26 a74,74 0 1,1 -0.1,0"/>
+              </defs>
+              <circle cx="100" cy="100" r="98" fill="url(#saucerFill)"/>
+              <circle cx="100" cy="100" r="84" fill="none" stroke="#000" stroke-opacity="0.06" stroke-width="1.2"/>
+              <g class="hero-cup-ring">
+                <text class="cup-ring-text"><textPath href="#cupRing">TRUE LOCA BRANDS &#8226; FOUNDER &#8226; BRAND &#8226; DEMAND ENGINE &#8226;</textPath></text>
+              </g>
+              <circle cx="100" cy="98" r="62" fill="#fccb00"/>
+              <circle cx="100" cy="98" r="62" fill="none" stroke="#ffffff" stroke-opacity="0.45" stroke-width="2"/>
+              <circle cx="100" cy="98" r="54" fill="url(#cupDrink)"/>
+              <path d="M62 80 A44 44 0 0 1 96 55" fill="none" stroke="#ffffff" stroke-opacity="0.18" stroke-width="3" stroke-linecap="round"/>
+              <text class="cup-true" x="100" y="80" text-anchor="middle">True</text>
+              <text class="cup-loca" x="100" y="109" text-anchor="middle">LOCA</text>
+              <text class="cup-brands" x="102" y="126" text-anchor="middle">BRANDS</text>
+            </svg>
+          </div>
+
+          <ul class="hero-dots" aria-label="Slides">
+            <li><button type="button" data-hero-go="0" aria-label="Slide 1" aria-current="true"></button></li>
+            <li><button type="button" data-hero-go="1" aria-label="Slide 2"></button></li>
+            <li><button type="button" data-hero-go="2" aria-label="Slide 3"></button></li>
+            <li><button type="button" data-hero-go="3" aria-label="Slide 4"></button></li>
+          </ul>
+
+          <a class="hero-cta" href="#how-we-work" aria-label="See how we work">
+            <svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5z"/></svg>
+            <span class="hero-cta-badge" aria-hidden="true">+</span>
+          </a>
         </div>
       </div>
-
-      <div class="hero-stickers reveal-fade" data-index="3" aria-hidden="true">
-        <div class="sticker sticker--planet">
-          <svg viewBox="0 0 260 210" xmlns="http://www.w3.org/2000/svg">
-            <path id="locaArc" d="M14,128 Q130,14 246,128" fill="none"/>
-            <text class="sticker-arc-text" font-size="40">
-              <textPath href="#locaArc" startOffset="50%" text-anchor="middle">LOCA</textPath>
-            </text>
-            <text class="sticker-main-text" x="130" y="188" font-size="56" text-anchor="middle">BRANDS</text>
-          </svg>
-        </div>
-
-        <div class="sticker sticker--vinyl">
-          <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="100" cy="100" r="97" fill="#ffffff" stroke="var(--ink)" stroke-width="3"/>
-            <circle cx="100" cy="100" r="88" fill="var(--red)" stroke="var(--ink)" stroke-width="2.5"/>
-            <path id="brandRing" d="M100,24 a76,76 0 1,1 -0.1,0" fill="none"/>
-            <text class="vinyl-ring-text">
-              <textPath href="#brandRing" startOffset="2%">LOCA BRANDS &#8226; LOCA BRANDS &#8226;</textPath>
-            </text>
-            <path id="brandArc" d="M42,148 A64,64 0 0,0 158,148" fill="none"/>
-            <text class="vinyl-arc-text" text-anchor="middle">
-              <textPath href="#brandArc" startOffset="50%">FOUNDER . BRAND . DEMAND</textPath>
-            </text>
-            <circle cx="100" cy="100" r="26" fill="var(--red)" stroke="var(--ink)" stroke-width="3"/>
-            <circle cx="100" cy="100" r="4.5" fill="var(--ink)"/>
-          </svg>
-        </div>
-      </div>
-
-      <span class="panel-index">01</span>
     </section>
   </div>
 
@@ -1588,6 +1761,48 @@ function revealBlock(id, delay) {
 window.addEventListener("load", () => {
   revealBlock("nav", 150);
 });
+// Not tied to "load": the hero shouldn't wait on slow images/fonts elsewhere on the page.
+revealBlock("hero-stage", 250);
+
+/* ---------- Hero: slide strip, dots and menu ---------- */
+(() => {
+  const slides = [
+    { title: "Brand Building", href: "#what-we-do",
+      text: "A senior-led studio that helps founders build, launch, evolve and scale consumer brands as one integrated system." },
+    { title: "Product Strategy", href: "#services-product",
+      text: "From idea to product: positioning, product architecture and a clear reason for the brand to exist." },
+    { title: "Design & Tech", href: "#services-design",
+      text: "Identity, design systems and the growth technology that turn a look into a working platform." },
+    { title: "Go-To-Market", href: "#services-gtm",
+      text: "Launch plans, channels and a demand engine built to turn the brand into a business." },
+  ];
+  const slideEl = document.getElementById("hero-slide");
+  if (!slideEl) return;
+  const title = document.getElementById("hero-title");
+  const text = document.getElementById("hero-text");
+  const more = document.getElementById("hero-more");
+  const count = document.getElementById("hero-count");
+  const dots = document.querySelectorAll("[data-hero-go]");
+  let current = 0;
+
+  function show(i) {
+    const next = (i + slides.length) % slides.length;
+    if (next === current) return;
+    current = next;
+    slideEl.classList.add("is-changing");
+    setTimeout(() => {
+      title.textContent = slides[current].title;
+      text.textContent = slides[current].text;
+      more.setAttribute("href", slides[current].href);
+      count.textContent = current + 1;
+      dots.forEach((d, j) => d.setAttribute("aria-current", j === current ? "true" : "false"));
+      slideEl.classList.remove("is-changing");
+    }, 250);
+  }
+  document.querySelectorAll("[data-hero-step]").forEach((b) =>
+    b.addEventListener("click", () => show(current + Number(b.dataset.heroStep))));
+  dots.forEach((d) => d.addEventListener("click", () => show(Number(d.dataset.heroGo))));
+})();
 
 /* ---------- Waitlist / contact form ---------- */
 document.querySelectorAll(".js-waitlist-form").forEach((form) => {
@@ -1701,7 +1916,7 @@ const headingObserver = new IntersectionObserver((entries) => {
 document.querySelectorAll(".section-heading").forEach((h) => headingObserver.observe(h));
 
 /* ---------- Nav smooth-scroll + scrolled state ---------- */
-document.querySelectorAll('.nav-links a[href^="#"], .btn-pill[href^="#"], .btn-outline[href^="#"], .topbar-cta[href^="#"], .footer-col a[href^="#"]').forEach((a) => {
+document.querySelectorAll('.nav-links a[href^="#"], #hero a[href^="#"], .btn-pill[href^="#"], .btn-outline[href^="#"], .topbar-cta[href^="#"], .footer-col a[href^="#"]').forEach((a) => {
   a.addEventListener("click", (e) => {
     const target = document.querySelector(a.getAttribute("href"));
     if (target) {
